@@ -1,9 +1,12 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "intiana-ibft-web-local",
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ibtf",
   "main": "dist/server/index.js",
   "compatibility_date": "2026-05-15",
   "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "dist/client"
+  },
   "d1_databases": [
     {
       "binding": "DB",
