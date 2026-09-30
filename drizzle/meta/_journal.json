@@ -1,0 +1,83 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1789015669414,
+      "tag": "0000_tiny_triathlon",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1789020516734,
+      "tag": "0001_adorable_lady_vermin",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789021277144,
+      "tag": "0002_damp_cerise",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1789111888858,
+      "tag": "0003_glorious_beast",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1789124137156,
+      "tag": "0004_nappy_vulcan",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1789124158901,
+      "tag": "0005_regular_devos",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1789125415208,
+      "tag": "0006_tricky_caretaker",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1789305634275,
+      "tag": "0007_cheerful_robin_chapel",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1790000000000,
+      "tag": "0008_oracle_ap_account_flexfields",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1790055000000,
+      "tag": "0009_access_control_administration",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1790060000000,
+      "tag": "0010_uat_evidence_reporting",
+      "breakpoints": true
+    }
+  ]
+}

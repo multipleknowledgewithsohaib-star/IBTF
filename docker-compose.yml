@@ -1,0 +1,15 @@
+services:
+  ibft-web:
+    build: .
+    ports:
+      - "8787:8787"
+    volumes:
+      - ibft-local-state:/app/.wrangler/state
+    environment:
+      IBFT_ENVIRONMENT: development
+      IBFT_BUSINESS_TIMEZONE: Asia/Karachi
+      IBFT_CURRENCY: PKR
+      IBFT_FISCAL_YEAR_START_MONTH: "7"
+
+volumes:
+  ibft-local-state:

@@ -1,0 +1,5 @@
+import { NextResponse } from "next/server";
+import { getAuthorizedUser } from "@/app/access";
+import { actOnReconciliation, ResolutionError } from "@/lib/reconciliation-resolution-service";
+import type { ResolutionAction } from "@/lib/reconciliation-resolution-controls";
+export async function POST(request:Request,{params}:{params:Promise<{id:string}>}){const user=await getAuthorizedUser();if(!user)return NextResponse.json({error:"Forbidden"},{status:403});try{const body=await request.json() as {action?:ResolutionAction;reason?:string;evidenceUploadId?:string;batchId?:string};if(!body.action)return NextResponse.json({error:"Action is required."},{status:400});return NextResponse.json(await actOnReconciliation({reconciliationId:(await params).id,action:body.action,reason:body.reason??"",evidenceUploadId:body.evidenceUploadId??"",batchId:body.batchId,user}));}catch(error){if(error instanceof ResolutionError)return NextResponse.json({error:error.message,code:error.code},{status:error.status});return NextResponse.json({error:"Resolution action was rejected safely."},{status:400});}}
