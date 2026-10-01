@@ -15,7 +15,19 @@ export async function GET(request: Request) {
         "SELECT count(*) as cnt FROM sqlite_master WHERE type='table' AND name='users'"
       ).first<{ cnt: number }>();
       if (!test || test.cnt === 0) {
-        await env.DB.exec(INIT_SQL);
+        const cleanSql = INIT_SQL.replace(/PRAGMA\s+foreign_keys\s*=\s*ON\s*;/gi, "");
+        try {
+          await env.DB.exec(cleanSql);
+        } catch {
+          const statements = cleanSql.split(";").map((s) => s.trim()).filter(Boolean);
+          for (const stmt of statements) {
+            try {
+              await env.DB.exec(stmt);
+            } catch {
+              // ignore duplicate or non-fatal errors
+            }
+          }
+        }
       }
     }
   } catch (err) {

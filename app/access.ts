@@ -48,6 +48,7 @@ export async function requirePermission(permission: PermissionCode): Promise<Aut
   if (!identity) redirect(`/signin-with-chatgpt?return_to=${encodeURIComponent("/dashboard")}`);
 
   const user = await getAuthorizedUser();
-  if (!user || !hasPermission(user.roles, permission)) redirect("/access-denied");
+  if (!user) redirect(`/signin-with-chatgpt?return_to=${encodeURIComponent("/dashboard")}`);
+  if (!hasPermission(user.roles, permission)) redirect("/access-denied");
   return user;
 }
