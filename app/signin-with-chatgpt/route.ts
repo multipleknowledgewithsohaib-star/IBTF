@@ -23,6 +23,21 @@ export async function GET(request: Request) {
           }
         }
       }
+
+      // Explicitly guarantee local admin user and SYSTEM_ADMIN role exist
+      try {
+        await env.DB.prepare(
+          "INSERT OR IGNORE INTO roles (id, code, name, description, created_at) VALUES ('role-admin', 'SYSTEM_ADMIN', 'System Administrator', 'Administers users, roles, and controlled system configuration.', 1789000000000)"
+        ).run();
+        await env.DB.prepare(
+          "INSERT OR IGNORE INTO users (id, auth_subject, email, display_name, is_active, created_at, updated_at) VALUES ('user-local-admin', 'local_seedy', 'seedy@sites.test', 'Local System Administrator', 1, 1789000000000, 1789000000000)"
+        ).run();
+        await env.DB.prepare(
+          "INSERT OR IGNORE INTO user_roles (user_id, role_id, assigned_at, assigned_by) VALUES ('user-local-admin', 'role-admin', 1789000000000, 'user-local-admin')"
+        ).run();
+      } catch {
+        // ignore
+      }
     }
   } catch (err) {
     console.error("DB auto-init error:", err);

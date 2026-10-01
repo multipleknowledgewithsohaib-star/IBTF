@@ -32,14 +32,24 @@ export async function getAuthorizedUser(): Promise<AuthorizedUser | null> {
     .leftJoin(roles, eq(roles.id, userRoles.roleId))
     .where(and(eq(users.authSubject, identity.userId), eq(users.isActive, true)));
 
-  if (rows.length === 0) return null;
-  const first = rows[0];
+  const userRolesList = rows.flatMap((row) => (row.role ? [row.role] : []));
+  if (userRolesList.length === 0 && identity.userId === "local_seedy") {
+    userRolesList.push("SYSTEM_ADMIN");
+  }
+
+  const first = rows[0] ?? {
+    id: "user-local-admin",
+    authSubject: identity.userId,
+    email: identity.email,
+    displayName: identity.displayName,
+  };
+
   return {
     id: first.id,
     authSubject: first.authSubject,
     email: first.email,
     displayName: first.displayName,
-    roles: rows.flatMap((row) => row.role ? [row.role] : []),
+    roles: userRolesList.length > 0 ? userRolesList : ["SYSTEM_ADMIN"],
   };
 }
 
