@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { env } from "cloudflare:workers";
-import { INIT_SQL } from "@/db/init-sql";
+import { CLEAN_STATEMENTS } from "@/db/clean-statements";
 
 export const dynamic = "force-dynamic";
 
@@ -15,17 +15,11 @@ export async function GET(request: Request) {
         "SELECT count(*) as cnt FROM sqlite_master WHERE type='table' AND name='users'"
       ).first<{ cnt: number }>();
       if (!test || test.cnt === 0) {
-        const cleanSql = INIT_SQL.replace(/PRAGMA\s+foreign_keys\s*=\s*ON\s*;/gi, "");
-        try {
-          await env.DB.exec(cleanSql);
-        } catch {
-          const statements = cleanSql.split(";").map((s) => s.trim()).filter(Boolean);
-          for (const stmt of statements) {
-            try {
-              await env.DB.exec(stmt);
-            } catch {
-              // ignore duplicate or non-fatal errors
-            }
+        for (const stmt of CLEAN_STATEMENTS) {
+          try {
+            await env.DB.prepare(stmt).run();
+          } catch {
+            // ignore individual non-fatal statement error
           }
         }
       }

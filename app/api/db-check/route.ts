@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { env } from "cloudflare:workers";
-import { INIT_SQL } from "@/db/init-sql";
+import { CLEAN_STATEMENTS } from "@/db/clean-statements";
 
 export const dynamic = "force-dynamic";
 
@@ -11,42 +11,25 @@ export async function GET() {
       return NextResponse.json({ error: "env.DB not found" }, { status: 500 });
     }
 
-    // Check existing tables
     const tables = await env.DB.prepare(
       "SELECT name FROM sqlite_master WHERE type='table'"
     ).all();
     results.existingTables = tables.results?.map((r: any) => r.name);
 
     if (!results.existingTables?.includes("users")) {
-      // Clean SQL by removing PRAGMA
-      const cleanSql = INIT_SQL.replace(/PRAGMA\s+foreign_keys\s*=\s*ON\s*;/gi, "");
-      
-      // Try executing statements
-      try {
-        await env.DB.exec(cleanSql);
-        results.execResult = "Executed successfully without PRAGMA";
-      } catch (execErr: any) {
-        results.execError = execErr.message || String(execErr);
-        
-        // Fallback: split and execute individually
-        const statements = cleanSql
-          .split(";")
-          .map((s) => s.trim())
-          .filter(Boolean);
-        const statementErrors: string[] = [];
-        let executedCount = 0;
-        for (const stmt of statements) {
-          try {
-            await env.DB.exec(stmt);
-            executedCount++;
-          } catch (stmtErr: any) {
-            statementErrors.push(`Error on [${stmt.slice(0, 40)}...]: ${stmtErr.message}`);
-          }
+      let executed = 0;
+      let errors: string[] = [];
+      for (const stmt of CLEAN_STATEMENTS) {
+        try {
+          await env.DB.prepare(stmt).run();
+          executed++;
+        } catch (err: any) {
+          errors.push(`Error on [${stmt.slice(0, 40)}...]: ${err.message}`);
         }
-        results.splitExec = { executedCount, errors: statementErrors.slice(0, 5) };
       }
+      results.executed = executed;
+      results.errors = errors.slice(0, 5);
 
-      // Check again after execution
       const tablesAfter = await env.DB.prepare(
         "SELECT name FROM sqlite_master WHERE type='table'"
       ).all();
